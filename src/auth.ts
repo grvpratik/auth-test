@@ -4,6 +4,7 @@ import prisma from "../prisma/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import github from "next-auth/providers/github";
+import google from "next-auth/providers/google";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
 	
@@ -11,6 +12,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
 	providers: [
 		github,
+		google,
 		// CredentialsProvider({
 		// 	name: "Sign in",
 		// 	id: "credentials",
@@ -63,16 +65,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 				}
 			};
 		},
-		jwt: ({ token, user }) => {
-			if (user) {
-				const u = user as unknown as any;
-				return {
-					...token,
-					
-					
-				};
-			}
-			return token;
-		},
+		
 	 },
 });
