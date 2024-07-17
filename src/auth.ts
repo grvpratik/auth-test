@@ -5,14 +5,41 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import github from "next-auth/providers/github";
 import google from "next-auth/providers/google";
+import authConfig from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-	
 	adapter: PrismaAdapter(prisma),
 
-	providers: [
-		github,
-		google,
+	session: { strategy: "jwt" },
+	callbacks: {
+		jwt: async ({ token, user }) => {
+			if (user) {
+				token.user = user;
+			}
+
+			return token;
+		},
+
+		session: ({ session, token }) => {
+			console.log(session.user);
+			console.log("TOKEN", token);
+			return {
+				...session,
+				user: {
+					email: session.user.email,
+					image: session.user.image,
+					role: "free",
+					token: token,
+				},
+			};
+		},
+	},
+	...authConfig,
+});
+
+//	providers: [
+	//	github,
+	//	google,
 		// CredentialsProvider({
 		// 	name: "Sign in",
 		// 	id: "credentials",
@@ -50,21 +77,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 		// 		};
 		// 	},
 		// }),
-	],
-	callbacks: {
-		
-		session: ({ session, token }) => {
-			console.log(session.user)
-			return {
-				...session,
-				user: {
-					email: session.user.email,
-					image: session.user.image,
-
-					
-				}
-			};
-		},
-		
-	 },
-});
+//	],
